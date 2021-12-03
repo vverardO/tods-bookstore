@@ -20,6 +20,11 @@ class User extends Authenticatable
         'password',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     protected $hidden = [
         'password',
     ];

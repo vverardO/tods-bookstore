@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Events\BookCreating;
+use App\Scopes\FromAuthenticatedUserScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Notifications\Notifiable;
 
 class Book extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'title',
@@ -18,6 +21,12 @@ class Book extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'value' => 'float',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -25,6 +34,15 @@ class Book extends Model
 
     public function status(): BelongsTo
     {
-        return $this->belongsTo(Status::class);
+        return $this->belongsTo(BookStatus::class);
+    }
+
+    protected $dispatchesEvents = [
+        'creating' => BookCreating::class,
+    ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new FromAuthenticatedUserScope);
     }
 }
