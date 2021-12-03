@@ -15,6 +15,8 @@ class CreateBooksTable extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->text('description');
             $table->decimal('value', 8, 2);
             $table->bigInteger('status_id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
@@ -27,7 +29,7 @@ class CreateBooksTable extends Migration
                 ->onDelete('cascade');
             $table->foreign('status_id')
                 ->references('id')
-                ->on('book_status')
+                ->on('book_statuses')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
         });
