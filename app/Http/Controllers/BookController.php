@@ -20,19 +20,19 @@ class BookController extends Controller
 
         $books = Book::with('user', 'status')->where(function (Builder $builder) use ($request) {
             if ($createdAt = $request->get('created_at')) {
-                $builder->where('created_at', '>=' , $createdAt);
+                $builder->where('created_at', '>=', $createdAt);
             }
 
             if ($updatedAt = $request->get('updated_at')) {
-                $builder->where('updated_at', '>=' , $updatedAt);
+                $builder->where('updated_at', '>=', $updatedAt);
             }
 
             if ($title = $request->get('title')) {
-                $builder->where('title', 'like' , "%{$title}%");
+                $builder->where('title', 'like', "%{$title}%");
             }
 
             if ($description = $request->get('description')) {
-                $builder->where('description', 'like' , "%{$description}%");
+                $builder->where('description', 'like', "%{$description}%");
             }
         })->paginate($show);
 

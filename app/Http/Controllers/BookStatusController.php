@@ -2,85 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BookStatus;
 use App\Http\Requests\StoreBookStatusRequest;
 use App\Http\Requests\UpdateBookStatusRequest;
+use App\Http\Resources\BookStatusResource;
+use App\Services\BookStatusService;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 
 class BookStatusController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    protected BookStatusService $service;
+
+    public function __construct(BookStatusService $bookStatusService)
     {
-        //
+        $this->service = $bookStatusService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function index(): JsonResource
     {
-        //
+        return BookStatusResource::collection(
+            $this->service->getAll()
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreBookStatusRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreBookStatusRequest $request)
+    public function store(StoreBookStatusRequest $request): JsonResource
     {
-        //
+        $bookStatus = $this->service->create(
+            $request->only([
+                'title',
+            ])
+        );
+
+        return new BookStatusResource($bookStatus);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\BookStatus  $bookStatus
-     * @return \Illuminate\Http\Response
-     */
-    public function show(BookStatus $bookStatus)
+    public function show(int $id): JsonResource
     {
-        //
+        return new BookStatusResource($this->service->getById($id));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\BookStatus  $bookStatus
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(BookStatus $bookStatus)
+    public function update(UpdateBookStatusRequest $request, int $id): JsonResource
     {
-        //
+        $bookStatus = $this->service->update($id,
+            $request->only([
+                'title',
+            ])
+        );
+
+        return new BookStatusResource($bookStatus);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateBookStatusRequest  $request
-     * @param  \App\Models\BookStatus  $bookStatus
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateBookStatusRequest $request, BookStatus $bookStatus)
+    public function destroy(int $id): Response
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\BookStatus  $bookStatus
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(BookStatus $bookStatus)
-    {
-        //
+        return $this->service->destroy($id);
     }
 }
